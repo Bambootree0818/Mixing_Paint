@@ -1,5 +1,4 @@
 import os
-import re
 
 def read_sample(file_path):
     with open(file_path, 'r') as file:
