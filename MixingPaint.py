@@ -14,7 +14,7 @@ sample_data = {}
 directory = "measured_BRDF/"
 
 for file_name in os.listdir(directory):
-    if paint_name in file_name:
+    if file_name.split("_")[0] == paint_name:
         file_path = directory + file_name 
         file_name = file_name.replace(".astm", "")
         print(file_name)
@@ -79,16 +79,16 @@ def linear_interpolation(sample_data, target_raito):
     interpolated_data = []
 
     #データポイントの数を取得
-    num_data_points = len(sample_data['B&R_1&9'])
+    num_data_points = len(sample_data[next(iter(sample_data))])
     print(num_data_points)
 
     #各データポイントに対する補完
     for i in range(num_data_points):
         print(i)
         #各比率に対するBRDFの値をリストに格納
-        brdf_b = [float(sample_data[f'B&R_{r}&{10-r}'][i][4]) for r in ratios]
-        brdf_g = [float(sample_data[f'B&R_{r}&{10-r}'][i][5]) for r in ratios]
-        brdf_r = [float(sample_data[f'B&R_{r}&{10-r}'][i][6]) for r in ratios]
+        brdf_b = [float(sample_data[f'{paint_name}_{r}&{10-r}'][i][4]) for r in ratios]
+        brdf_g = [float(sample_data[f'{paint_name}_{r}&{10-r}'][i][5]) for r in ratios]
+        brdf_r = [float(sample_data[f'{paint_name}_{r}&{10-r}'][i][6]) for r in ratios]
 
         #線形補完を実行
         interp_b = interp1d(ratios, brdf_b, kind='linear')
@@ -101,10 +101,10 @@ def linear_interpolation(sample_data, target_raito):
 
         # 補完されたデータを格納
         interpolated_data.append([
-            wi_theta['B&R_1&9'][i],
-            wi_phi['B&R_1&9'][i],
-            wo_theta['B&R_1&9'][i],
-            wo_phi['B&R_1&9'][i],
+            wi_theta[next(iter(sample_data))][i],
+            wi_phi[next(iter(sample_data))][i],
+            wo_theta[next(iter(sample_data))][i],
+            wo_phi[next(iter(sample_data))][i],
             interpolated_b,
             interpolated_g,
             interpolated_r
@@ -119,7 +119,7 @@ interpolated_results = linear_interpolation(sample_data, target_ratio)
 
 # 補完された結果をCSVファイルに保存
 result_directory = "Result"
-output_file = os.path.join(result_directory, f'B&R_{target_ratio}&{10-target_ratio}.csv')
+output_file = os.path.join(result_directory, f'{paint_name}_{target_ratio}&{10 - int(target_ratio)}.csv')
 with open(output_file, 'w') as f:
     for row in interpolated_results:
         f.write(','.join(map(str, row)) + '\n')
