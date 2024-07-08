@@ -1,4 +1,6 @@
 import os
+import numpy as np
+from scipy.interpolate import interp1d
 
 def read_sample(file_path):
     with open(file_path, 'r') as file:
@@ -67,3 +69,59 @@ def set_parameter(sample_data):
 set_parameter(sample_data)
 
 #print(ref_b["B&R_1&9"])
+
+def linear_interpolation(sample_data, target_raito):
+    #使用する比率
+    ratios = [1, 3, 5, 7, 9]
+    ratios.sort() 
+    target_ratio = float(target_raito)
+
+    interpolated_data = []
+
+    #データポイントの数を取得
+    num_data_points = len(sample_data['B&R_1&9'])
+    print(num_data_points)
+
+    #各データポイントに対する補完
+    for i in range(num_data_points):
+        print(i)
+        #各比率に対するBRDFの値をリストに格納
+        brdf_b = [float(sample_data[f'B&R_{r}&{10-r}'][i][4]) for r in ratios]
+        brdf_g = [float(sample_data[f'B&R_{r}&{10-r}'][i][5]) for r in ratios]
+        brdf_r = [float(sample_data[f'B&R_{r}&{10-r}'][i][6]) for r in ratios]
+
+        #線形補完を実行
+        interp_b = interp1d(ratios, brdf_b, kind='linear')
+        interp_g = interp1d(ratios, brdf_g, kind='linear')
+        interp_r = interp1d(ratios, brdf_r, kind='linear')
+
+        interpolated_b = interp_b(target_ratio)
+        interpolated_g = interp_g(target_ratio)
+        interpolated_r = interp_r(target_ratio)
+
+        # 補完されたデータを格納
+        interpolated_data.append([
+            wi_theta['B&R_1&9'][i],
+            wi_phi['B&R_1&9'][i],
+            wo_theta['B&R_1&9'][i],
+            wo_phi['B&R_1&9'][i],
+            interpolated_b,
+            interpolated_g,
+            interpolated_r
+        ])
+
+    return interpolated_data
+    
+
+# 補完する比率をユーザーから入力
+target_ratio = input("Enter the target ratio (e.g., 4 for 4:6): ")
+interpolated_results = linear_interpolation(sample_data, target_ratio)
+
+# 補完された結果をCSVファイルに保存
+result_directory = "Result"
+output_file = os.path.join(result_directory, f'B&R_{target_ratio}&{10-target_ratio}.csv')
+with open(output_file, 'w') as f:
+    for row in interpolated_results:
+        f.write(','.join(map(str, row)) + '\n')
+
+print(f"Interpolated data has been saved to {output_file}")
