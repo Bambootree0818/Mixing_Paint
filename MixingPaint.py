@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from scipy.interpolate import interp1d
+from datetime import datetime
 
 def read_sample(file_path):
     with open(file_path, 'r') as file:
@@ -119,8 +120,30 @@ interpolated_results = linear_interpolation(sample_data, target_ratio)
 
 # 補完された結果をCSVファイルに保存
 result_directory = "Result"
-output_file = os.path.join(result_directory, f'{paint_name}_{target_ratio}&{10 - int(target_ratio)}.csv')
+output_file_name = f'{paint_name}_{target_ratio}&{10 - int(target_ratio)}'
+output_file = os.path.join(result_directory, f'{output_file_name}.astm')
+
+current_date = datetime.now().strftime("%Y/%m/%d")
+current_time = datetime.now().strftime("%H:%M:%S")
+
+# ヘッダー情報を設定
+header = f"""LAB_NAME MIYATA_LAB SASAKI
+
+SYSTEM_NAME MixingPaint.py
+APERTURE Circular
+
+SAMPLE_NAME "{output_file_name}"
+
+MEAS_NAME BRDF
+FILE_NAME "{output_file_name}.astm"
+MEAS_DATE {current_date}
+MEAS_TIME {current_time}
+NUM_POINTS 12964
+VARS theta_i,phi_i,theta_s,465nm,525nm,630nm
+"""
+
 with open(output_file, 'w') as f:
+    f.write(header + '\n')  # ヘッダー情報を追加
     for row in interpolated_results:
         f.write(','.join(map(str, row)) + '\n')
 
