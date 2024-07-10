@@ -119,7 +119,7 @@ target_ratio = input("Enter the target ratio (e.g., 4 for 4:6): ")
 interpolated_results = linear_interpolation(sample_data, target_ratio)
 
 # 補完された結果をCSVファイルに保存
-result_directory = "Result"
+result_directory = "Results"
 output_file_name = f'{paint_name}_{target_ratio}&{10 - int(target_ratio)}'
 output_file = os.path.join(result_directory, f'{output_file_name}.astm')
 

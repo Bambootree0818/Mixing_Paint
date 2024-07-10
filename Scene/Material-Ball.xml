@@ -1,0 +1,121 @@
+<scene version="3.0.0">
+
+<!-- Defaults, these can be set via the command line: -Darg=value -->
+
+	<default name="spp" value="512"/>
+	<default name="resx" value="512"/>
+	<default name="resy" value="512"/>
+
+<!-- Camera and Rendering Parameters -->
+
+	<integrator type="path" id="elm__0" name="elm__0">
+		<integer name="max_depth" value="12"/>
+	</integrator>
+	<sensor type="perspective" id="elm__6" name="elm__6">
+		<string name="fov_axis" value="x"/>
+		<float name="fov" value="39.597755"/>
+		<float name="principal_point_offset_x" value="0.000000"/>
+		<float name="principal_point_offset_y" value="-0.000000"/>
+		<float name="near_clip" value="0.100000"/>
+		<float name="far_clip" value="1000.000000"/>
+		<transform name="to_world">
+			<rotate x="1" angle="-152.75406189023448"/>
+			<rotate y="1" angle="4.7290172443536365e-06"/>
+			<rotate z="1" angle="-180.00000500895632"/>
+			<translate value="0.000000 6.554805 7.708368"/>
+		</transform>
+		<sampler type="independent" name="sampler">
+			<integer name="sample_count" value="$spp"/>
+		</sampler>
+		<film type="hdrfilm" name="film">
+			<integer name="width" value="$resx"/>
+			<integer name="height" value="$resy"/>
+		</film>
+	</sensor>
+
+<!-- Materials -->
+
+	<bsdf type="principled" id="bsdf-matpreview">
+		<rgb name="base_color" value="1.0,1.0,1.0"/>
+		<float name="metallic" value="0.5" />
+		<float name="specular" value="0.5" />
+		<float name="roughness" value="0.5" />
+		<float name="spec_tint" value="0.0" />
+		<float name="anisotropic" value="0.0" />
+		<float name="sheen" value="0.0" />
+		<float name="sheen_tint" value="0.0" />
+		<float name="clearcoat" value="1.0" />
+		<float name="clearcoat_gloss" value="1.0" />
+		<float name="spec_trans" value="0.0" />
+	</bsdf>
+
+	<bsdf type="diffuse" id="bsdf-diffuse">
+        <rgb name="reflectance" value="0.18 0.18 0.18" />
+    </bsdf>
+
+	<bsdf type="diffuse" id="mat-floor" name="mat-floor">
+		<ref name="reflectance" id="texture-checkerboard" />
+	</bsdf>
+
+	<bsdf type="diffuse" id="bsdf-plane">
+        <ref name="reflectance" id="texture-checkerboard" />
+    </bsdf>
+
+	<texture type="checkerboard" id="texture-checkerboard">
+        <rgb name="color0" value="0.4" />
+        <rgb name="color1" value="0.2" />
+        <transform name="to_uv">
+            <scale x="8.000000" y="8.000000" />
+        </transform>
+    </texture>
+
+<!-- Emitters -->
+
+	<emitter type="envmap" id="elm__1" name="elm__1">
+		<string name="filename" value="textures/envmap.exr"/>
+		<float name="scale" value="1.000000"/>
+		<transform name="to_world">
+			<matrix value="0.000000 0.000000 1.000000 0.000000 0.000000 1.000000 0.000000 0.000000 -1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000"/>
+		</transform>
+	</emitter>
+
+<!-- Shapes -->
+
+	<shape type="serialized" id="shape-matpreview-exterior">
+		<string name="filename" value="matpreview.serialized" />
+		<integer name="shape_index" value="2" />
+		<transform name="to_world">
+            <matrix value="0.614046 0.614047 0 -1.78814e-07 -0.614047 0.614046 0 2.08616e-07 0 0 0.868393 1.02569 0 0 0 1" />
+			<rotate z="1" angle="-45" />
+			<rotate x="1" angle="-90"/>
+			<scale value="2"/>
+			<translate x="0" y="1" z="0."/>
+        </transform>
+		<ref name="bsdf" id="bsdf-matpreview" />
+	</shape>
+
+	<shape type="serialized" id="shape-matpreview-interior">
+        <string name="filename" value="matpreview.serialized" />
+        <integer name="shape_index" value="1" />
+        <transform name="to_world">
+            <matrix value="1 0 0 0 0 1 0 0 0 0 1 0.0252155 0 0 0 1" />
+			<rotate z="1" angle="-90"/>
+			<rotate x="1" angle="-90"/>
+			<scale value="2"/>
+			<translate x="0" y="1" z="0."/>
+        </transform>
+        <ref name="bsdf" id="bsdf-diffuse" />
+    </shape>
+
+	<shape type="ply" id="elm__5" name="elm__5">
+		<string name="filename" value="meshes/Plane.ply"/>
+		<boolean name="face_normals" value="false"/>
+		<transform name="to_world">
+			<translate x="0" y="1" z="0."/>
+        </transform>
+		<ref name="bsdf" id="bsdf-plane"/>
+	</shape>
+
+<!-- Volumes -->
+
+</scene>
